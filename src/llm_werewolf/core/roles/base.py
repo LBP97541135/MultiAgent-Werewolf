@@ -22,7 +22,7 @@ class Role(ABC):
 
     def _apply_catalog_description(self) -> None:
         try:
-            from llm_werewolf.adapter.prompt_manager import PromptManager
+            from llm_werewolf.core.prompts.manager import PromptManager
 
             definition = get_definition_by_skill_class(type(self))
             description = PromptManager.get_role_description(definition)
@@ -121,7 +121,7 @@ class Role(ABC):
             str: The prompt string for the AI agent.
         """
         try:
-            from llm_werewolf.adapter.prompt_manager import PromptManager
+            from llm_werewolf.core.prompts.manager import PromptManager
 
             definition = get_definition_by_skill_class(type(self))
             return (
