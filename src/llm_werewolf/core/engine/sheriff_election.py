@@ -73,7 +73,7 @@ class SheriffElectionMixin:
             context = self._build_campaign_context(player)
             try:
                 decision = await ActionSelector.ask_yes_no(
-                    player.agent, context, "Do you want to campaign for sheriff? (yes/no)"
+                    player.agent, context, "是否参加警长竞选？"
                 )
                 return player if decision else None
             except Exception:
@@ -104,25 +104,14 @@ class SheriffElectionMixin:
         if not self.game_state:
             return ""
 
-        context_parts = [
-            f"You are {player.name}, a {player.get_role_name()}.",
-            f"Current: Round {self.game_state.round_number} - Sheriff Election",
-            "",
-            "SHERIFF ELECTION:",
-            "The sheriff election is now open. As sheriff, you will have:",
-            "- 1.5x voting power during day voting phases",
-            "- The ability to transfer the sheriff badge to another player when you die",
-            "- Additional speaking authority and influence",
-            "",
-            "However, becoming sheriff also:",
-            "- May draw attention to you (good or bad depending on your role)",
-            "- May make you a target for werewolves if you're a villager",
-            "- May help you mislead the village if you're a werewolf",
-            "",
-            "Consider your role and strategy before deciding.",
-        ]
+        from llm_werewolf.core.prompts.actions import EngineContexts
 
-        return "\n".join(context_parts)
+        return EngineContexts.sheriff_run(
+            player.name, player.get_role_name(), self.game_state.round_number
+        ) + (
+            "\n\n警长拥有 1.5 票投票权，死亡时可转移或撕毁警徽。"
+            "请结合你的身份与策略决定是否参选。"
+        )
 
     async def _conduct_campaign_speeches(self, candidates: list[PlayerProtocol]) -> None:
         """Have each candidate give a campaign speech.
@@ -145,7 +134,7 @@ class SheriffElectionMixin:
             speech = await ActionSelector.get_free_response(
                 candidate.agent,
                 context,
-                "Give your campaign speech (explain why you should be sheriff):",
+                "请发表竞选发言，说明为何适合担任警长：",
             )
 
             self._log_event(
@@ -171,25 +160,13 @@ class SheriffElectionMixin:
 
         other_candidates = [c.name for c in candidates if c.player_id != player.player_id]
 
-        context_parts = [
-            f"You are {player.name}, a {player.get_role_name()}.",
-            f"Current: Round {self.game_state.round_number} - Sheriff Election (Speech Phase)",
-            "",
-            "CAMPAIGN SPEECH:",
-            f"You are one of {len(candidates)} candidates for sheriff.",
-            f"Other candidates: {', '.join(other_candidates) if other_candidates else 'None'}",
-            "",
-            "Give a speech to convince other players to vote for you.",
-            "You may:",
-            "- Claim your role (true or false)",
-            "- Explain why you'd be a good sheriff",
-            "- Point out suspicions or share information",
-            "- Make promises about how you'll use your sheriff powers",
-            "",
-            "Keep your speech concise (2-3 sentences).",
-        ]
+        from llm_werewolf.core.prompts.actions import EngineContexts
 
-        return "\n".join(context_parts)
+        base = EngineContexts.sheriff_speech(
+            player.name, player.get_role_name(), self.game_state.round_number, len(candidates)
+        )
+        others = ", ".join(other_candidates) if other_candidates else "无"
+        return f"{base}\n其他候选人：{others}"
 
     async def _conduct_sheriff_voting(self, candidates: list[PlayerProtocol]) -> dict[str, int]:
         """Have all players vote for sheriff concurrently.
@@ -230,7 +207,7 @@ class SheriffElectionMixin:
                 vote_target = await ActionSelector.get_target_from_agent(
                     agent=voter.agent,
                     role_name=voter.get_role_name(),
-                    action_description="Vote for sheriff",
+                    action_description="投票选举警长",
                     possible_targets=available_candidates,
                     allow_skip=True,
                     additional_context=context,
@@ -279,23 +256,14 @@ class SheriffElectionMixin:
 
         candidate_names = [c.name for c in candidates]
 
-        context_parts = [
-            f"You are {player.name}, a {player.get_role_name()}.",
-            f"Current: Round {self.game_state.round_number} - Sheriff Election (Voting Phase)",
-            "",
-            "SHERIFF VOTING:",
-            f"Candidates: {', '.join(candidate_names)}",
-            "",
-            "Vote for who you think should be sheriff.",
-            "Consider:",
-            "- Their campaign speech",
-            "- Whether you trust them",
-            "- Your role and win conditions",
-            "",
-            "You may also abstain from voting.",
-        ]
+        from llm_werewolf.core.prompts.actions import EngineContexts
 
-        return "\n".join(context_parts)
+        return EngineContexts.sheriff_vote_intro(
+            player.name,
+            player.get_role_name(),
+            self.game_state.round_number,
+            candidate_names,
+        ) + "\n可结合竞选发言、信任度与自身胜利条件投票，也可选择弃权。"
 
     def _determine_sheriff_winner(
         self, vote_counts: dict[str, int], candidates: list[PlayerProtocol]

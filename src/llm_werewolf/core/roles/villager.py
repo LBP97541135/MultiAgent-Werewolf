@@ -18,7 +18,7 @@ from llm_werewolf.core.actions import (
     GraveyardKeeperCheckAction,
 )
 from llm_werewolf.core.roles.base import Role
-from llm_werewolf.core.action_selector import ActionSelector
+from llm_werewolf.core.prompts import ActionSelector
 
 
 class Villager(Role):
@@ -103,14 +103,14 @@ class Seer(Role):
                 if player:
                     checked_info.append(f"Round {round_num}: {player.name}")
 
-            context = "Choose a player to check their identity (werewolf or villager)."
+            context = "请选择要查验身份的玩家（狼人或好人）。"
             if checked_info:
                 context += f"\n\nPreviously checked: {', '.join(checked_info)}"
 
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Seer",
-                action_description="Choose a player to check tonight",
+                action_description="今晚查验一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -205,7 +205,7 @@ class Witch(Role):
                 target = await ActionSelector.get_target_from_agent(
                     agent=self.player.agent,
                     role_name="Witch",
-                    action_description="Choose a player to poison (or skip)",
+                    action_description="选择一名玩家毒杀（或跳过）",
                     possible_targets=possible_targets,
                     allow_skip=True,
                     additional_context="You can poison any player tonight. You can only use this potion once in the entire game.",
@@ -295,7 +295,7 @@ class Guard(Role):
 
         # Get target from AI agent
         if self.player.agent:
-            context = "Choose a player to protect from werewolf attacks tonight."
+            context = "请选择今晚要守护的玩家。"
             if self.last_protected:
                 last_player = game_state.get_player(self.last_protected)
                 if last_player:
@@ -306,7 +306,7 @@ class Guard(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Guard",
-                action_description="Choose a player to protect tonight",
+                action_description="今晚守护一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -490,7 +490,7 @@ class Cupid(Role):
             # Use a multi-target approach - select 2 different players
             prompt = ActionSelector.build_multi_target_prompt(
                 role_name="Cupid",
-                action_description="Choose 2 players to become lovers",
+                action_description="选择两名玩家结为情侣",
                 possible_targets=possible_targets,
                 num_targets=2,
                 additional_context=(
@@ -556,7 +556,7 @@ class Raven(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Raven",
-                action_description="Choose a player to mark with a curse",
+                action_description="选择一名玩家施加诅咒",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context="The marked player will have one extra vote against them in tomorrow's voting.",
@@ -607,7 +607,7 @@ class GraveyardKeeper(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Graveyard Keeper",
-                action_description="Choose a dead player to check",
+                action_description="选择一名已死亡玩家查验身份",
                 possible_targets=dead_players,
                 allow_skip=True,
                 additional_context=(

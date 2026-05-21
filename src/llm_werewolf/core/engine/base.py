@@ -93,6 +93,8 @@ class GameEngineBase:
             player = Player(
                 player_id=player_id, name=name, role=role_class, agent=agent, ai_model=ai_model
             )
+            if hasattr(agent, "bind_role"):
+                agent.bind_role(role_class, seat_number=idx)  # type: ignore[attr-defined]
             player_objects.append(player)
 
         self.game_state = GameState(player_objects)

@@ -6,11 +6,11 @@ import logfire
 from rich.console import Console
 
 from llm_werewolf.core import GameEngine
-from llm_werewolf.core.agent import create_agent
+from llm_werewolf.agents.base import create_agent
 from llm_werewolf.core.utils import load_config
 from llm_werewolf.core.config import create_game_config_from_player_count
 from llm_werewolf.core.locale import Locale
-from llm_werewolf.core.role_registry import create_roles
+from llm_werewolf.core.roles.registry import create_roles
 from llm_werewolf.ui.console_presenter import ConsolePresenter
 
 console = Console()

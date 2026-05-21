@@ -97,6 +97,7 @@ dev = [
     "ty",
 ]
 test = [
+    "agentscope>=1.0.20",
     "genbadge[all]",
     "pytest",
     "pytest-asyncio",

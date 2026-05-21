@@ -8,6 +8,7 @@ from collections.abc import Callable
 from llm_werewolf.core.types import Camp, EventType, GamePhase
 from llm_werewolf.core.locale import Locale
 from llm_werewolf.core.game_state import GameState
+from llm_werewolf.core.prompts.actions import EngineContexts
 
 if TYPE_CHECKING:
     from llm_werewolf.core.actions.base import Action
@@ -67,32 +68,19 @@ class NightPhaseMixin:
             if werewolf.agent:
                 shared_observation = self.build_shared_observation(
                     werewolves,
-                    additional_notes=[
-                        f"You are coordinating with these werewolves: {', '.join(werewolf_names)}.",
-                        f"Available targets: {', '.join(target_names)}.",
-                    ],
+                    additional_notes=EngineContexts.werewolf_coordination_note(
+                        werewolf_names, target_names
+                    ),
                     include_visible_events=True,
                 )
-                context_parts = [
-                    shared_observation,
-                    f"You are {werewolf.name}, a Werewolf.",
-                    f"Current: Round {self.game_state.round_number} - Night Phase",
-                    f"You are working with these werewolves: {', '.join(werewolf_names)}.",
-                    f"Available targets: {', '.join(target_names)}.",
-                ]
-
-                # Include werewolf discussion history
                 werewolf_history = self._get_werewolf_discussion_context()
-                if werewolf_history:
-                    context_parts.append(werewolf_history)
-
-                context_parts.extend([
-                    "",
-                    "Discuss with your fellow werewolves who should be eliminated tonight.",
-                    "Share your thoughts and suggestions (1-2 sentences).",
-                ])
-
-                context = "\n".join(context_parts)
+                context = shared_observation + "\n" + EngineContexts.werewolf_discussion(
+                    werewolf.name,
+                    self.game_state.round_number,
+                    werewolf_names,
+                    target_names,
+                    werewolf_history,
+                )
 
                 try:
                     speech = await werewolf.agent.get_response(context)

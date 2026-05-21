@@ -14,7 +14,7 @@ from llm_werewolf.core.actions import (
     GuardianWolfProtectAction,
 )
 from llm_werewolf.core.roles.base import Role
-from llm_werewolf.core.action_selector import ActionSelector
+from llm_werewolf.core.prompts import ActionSelector
 
 
 def build_werewolf_team_context(
@@ -29,7 +29,7 @@ def build_werewolf_team_context(
         (
             f"You are working with these werewolves: {', '.join(werewolf_names)}.\n"
             f"All werewolves will vote on who to eliminate tonight.\n"
-            f"Choose a villager to vote for as {role_name}."
+            f"作为{role_name}，请选择要投票击杀的好人目标。"
         ),
     ]))
 
@@ -101,7 +101,7 @@ class Werewolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Werewolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -148,7 +148,7 @@ class AlphaWolf(Werewolf):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Alpha Wolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -209,7 +209,7 @@ class WhiteWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="White Wolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -232,7 +232,7 @@ class WhiteWolf(Role):
                 target = await ActionSelector.get_target_from_agent(
                     agent=self.player.agent,
                     role_name="White Wolf",
-                    action_description="Choose a werewolf to kill (or skip)",
+                    action_description="选择一名狼人队友击杀（或跳过）",
                     possible_targets=werewolf_targets,
                     allow_skip=True,
                     additional_context=(
@@ -302,7 +302,7 @@ class WolfBeauty(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Wolf Beauty",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -321,7 +321,7 @@ class WolfBeauty(Role):
                 target = await ActionSelector.get_target_from_agent(
                     agent=self.player.agent,
                     role_name="Wolf Beauty",
-                    action_description="Choose a player to charm",
+                    action_description="选择一名玩家魅惑",
                     possible_targets=charm_targets,
                     allow_skip=False,
                     additional_context=(
@@ -384,7 +384,7 @@ class GuardianWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Guardian Wolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -402,7 +402,7 @@ class GuardianWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Guardian Wolf",
-                action_description="Choose a werewolf to protect tonight",
+                action_description="选择一名狼人队友保护",
                 possible_targets=werewolf_targets,
                 allow_skip=True,
                 additional_context=(
@@ -468,7 +468,7 @@ class HiddenWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Hidden Wolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -539,11 +539,11 @@ class BloodMoonApostle(Role):
                 target = await ActionSelector.get_target_from_agent(
                     agent=self.player.agent,
                     role_name="Blood Moon Apostle",
-                    action_description="Vote for a player to kill tonight",
+                    action_description="今晚投票击杀一名玩家",
                     possible_targets=possible_targets,
                     allow_skip=False,
                     additional_context=(
-                        "You have transformed into a werewolf! Vote for who to eliminate tonight."
+                        "你已变为狼人，请选择今晚击杀目标。"
                     ),
                     round_number=game_state.round_number,
                     phase="Night",
@@ -603,7 +603,7 @@ class NightmareWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Nightmare Wolf",
-                action_description="Vote for a player to kill tonight",
+                action_description="今晚投票击杀一名玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
                 additional_context=context,
@@ -621,7 +621,7 @@ class NightmareWolf(Role):
             target = await ActionSelector.get_target_from_agent(
                 agent=self.player.agent,
                 role_name="Nightmare Wolf",
-                action_description="Choose a player to block tonight",
+                action_description="选择一名玩家封锁其技能",
                 possible_targets=block_targets,
                 allow_skip=True,
                 additional_context=(

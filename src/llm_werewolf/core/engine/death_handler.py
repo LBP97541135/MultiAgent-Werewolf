@@ -166,18 +166,18 @@ class DeathHandlerMixin:
                 )
                 return messages
 
+            from llm_werewolf.core.prompts.actions import ActionDescriptions, EngineContexts
+
             context = (
-                f"You are {sheriff.name}, the sheriff, and you have died.\n"
-                f"You can choose to:\n"
-                f"1. Transfer the sheriff badge to another living player\n"
-                f"2. Tear the badge (choose 'skip' or 'none')\n\n"
-                f"Living players: {', '.join([p.name for p in possible_targets])}\n"
+                EngineContexts.sheriff_died(sheriff.name)
+                + "\n可将警徽交给存活玩家，或选择跳过以撕毁警徽。\n"
+                f"存活玩家：{', '.join(p.name for p in possible_targets)}\n"
             )
 
             target = await ActionSelector.get_target_from_agent(
                 agent=sheriff.agent,
-                role_name="Sheriff",
-                action_description="Choose a player to transfer the sheriff badge to (or skip to tear it)",
+                role_name="警长",
+                action_description=ActionDescriptions.TRANSFER_BADGE,
                 possible_targets=possible_targets,
                 allow_skip=True,
                 additional_context=context,
@@ -233,10 +233,10 @@ class DeathHandlerMixin:
             target = await ActionSelector.get_target_from_agent(
                 agent=player.agent,
                 role_name=role_name,
-                action_description="Choose a player to shoot before you die",
+                action_description="临死前选择带走的玩家",
                 possible_targets=possible_targets,
                 allow_skip=False,
-                additional_context=f"You ({player.name}) have been killed. You can take one player down with you.",
+                additional_context=f"你（{player.name}）已死亡，可以带走一名玩家。",
             )
         else:
             target = random.choice(possible_targets)  # noqa: S311

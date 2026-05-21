@@ -1,6 +1,6 @@
 from pydantic import Field, BaseModel, field_validator
 
-from llm_werewolf.core.role_registry import validate_role_names
+from llm_werewolf.core.roles.registry import validate_role_names
 
 
 class GameConfig(BaseModel):

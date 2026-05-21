@@ -73,7 +73,7 @@ class VotingPhaseMixin:
                 target_player = await ActionSelector.get_target_from_agent(
                     agent=player.agent,
                     role_name=player.get_role_name(),
-                    action_description="Vote for a player to eliminate",
+                    action_description="投票放逐一名玩家",
                     possible_targets=possible_targets,
                     allow_skip=False,
                     additional_context=context,

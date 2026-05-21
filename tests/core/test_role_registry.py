@@ -4,7 +4,7 @@ import pytest
 
 from llm_werewolf.core.roles import Seer, Witch, Villager, Werewolf, AlphaWolf, WhiteWolf
 from llm_werewolf.core.roles.base import Role
-from llm_werewolf.core.role_registry import (
+from llm_werewolf.core.roles.registry import (
     create_roles,
     get_role_map,
     get_werewolf_roles,

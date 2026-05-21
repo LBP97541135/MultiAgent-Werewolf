@@ -40,13 +40,9 @@ class DayPhaseMixin:
                 context_parts.append(decision_context)
 
         context_parts.append("")
-        context_parts.append(
-            "Share your thoughts, suspicions, or information. "
-            "Your goal is to help your team win while staying in character."
-        )
-        context_parts.append(
-            "\nProvide a brief statement (1-3 sentences) for this discussion round."
-        )
+        from llm_werewolf.core.prompts.actions import EngineContexts
+
+        context_parts.append(EngineContexts.day_discussion_prompt())
 
         return "\n".join(context_parts)
 
@@ -84,7 +80,7 @@ class DayPhaseMixin:
         else:
             messages.append("No one died last night.")
 
-        messages.append("\n--- Discussion Phase ---")
+        messages.append("\n--- 讨论阶段 ---")
         alive_players = self.game_state.get_alive_players()
 
         for player in alive_players:
