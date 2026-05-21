@@ -42,6 +42,7 @@ class Msg:
         metadata: dict | None = None,
         timestamp: str | None = None,
         invocation_id: str | None = None,
+        msg_id: str | None = None,
     ) -> None:
         """Initialize the Msg object.
 
@@ -52,12 +53,13 @@ class Msg:
             metadata: Additional metadata for the message.
             timestamp: The timestamp of the message. Auto-generated if None.
             invocation_id: The related API invocation ID.
+            msg_id: Optional message ID. Auto-generated if None.
         """
         self.name = name
         self.content = content
         self.role = role
         self.metadata = metadata or {}
-        self.id = shortuuid.uuid()
+        self.id = msg_id or shortuuid.uuid()
         self.timestamp = timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         self.invocation_id = invocation_id
 
@@ -82,6 +84,7 @@ class Msg:
             metadata=data.get("metadata"),
             timestamp=data.get("timestamp"),
             invocation_id=data.get("invocation_id"),
+            msg_id=data.get("id"),
         )
 
     def get_text_content(self, separator: str = "\n") -> str | None:

@@ -9,6 +9,17 @@ class Camp(str, Enum):
     NEUTRAL = "neutral"
 
 
+class VictoryGoal(str, Enum):
+    """Win condition category for role definitions."""
+
+    WEREWOLF_PARITY = "werewolf_parity"
+    VILLAGER_ELIMINATE_WEREWOLVES = "villager_eliminate_werewolves"
+    NEUTRAL_LOVER = "neutral_lover"
+    NEUTRAL_THIEF = "neutral_thief"
+    NEUTRAL_WHITE_LOVER_WOLF = "neutral_white_lover_wolf"
+    FOLLOW_ASSIGNED_CAMP = "follow_assigned_camp"
+
+
 class ActionPriority(int, Enum):
     """Enum representing the priority order of night actions.
 

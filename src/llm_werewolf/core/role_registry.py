@@ -1,89 +1,34 @@
-from llm_werewolf.core.roles import (
-    Seer,
-    Cupid,
-    Elder,
-    Guard,
-    Idiot,
-    Lover,
-    Raven,
-    Thief,
-    Witch,
-    Hunter,
-    Knight,
-    Magician,
-    Villager,
-    Werewolf,
-    AlphaWolf,
-    WhiteWolf,
-    HiddenWolf,
-    WolfBeauty,
-    GuardianWolf,
-    NightmareWolf,
-    GraveyardKeeper,
-    BloodMoonApostle,
-)
+"""Role registry backed by declarative role catalog."""
+
 from llm_werewolf.core.roles.base import Role
+from llm_werewolf.core.roles.catalog import ROLE_CATALOG, get_definition
+from llm_werewolf.core.roles.definition import RoleDefinition
+from llm_werewolf.core.roles.loader import skill_class_from_definition
+from llm_werewolf.core.types.enums import Camp
+
+
+def get_role_definitions() -> list[RoleDefinition]:
+    """Return all registered role definitions."""
+    return list(ROLE_CATALOG)
 
 
 def get_role_map() -> dict[str, type[Role]]:
-    """Get the mapping of role names to role classes.
+    """Map registry name -> Role class (from definition skill paths)."""
+    return {d.name: skill_class_from_definition(d) for d in ROLE_CATALOG}
 
-    Returns:
-        dict[str, type[Role]]: Mapping of role name strings to Role classes.
-    """
-    return {
-        "Werewolf": Werewolf,
-        "AlphaWolf": AlphaWolf,
-        "WhiteWolf": WhiteWolf,
-        "WolfBeauty": WolfBeauty,
-        "GuardianWolf": GuardianWolf,
-        "HiddenWolf": HiddenWolf,
-        "BloodMoonApostle": BloodMoonApostle,
-        "NightmareWolf": NightmareWolf,
-        "Villager": Villager,
-        "Seer": Seer,
-        "Witch": Witch,
-        "Hunter": Hunter,
-        "Guard": Guard,
-        "Idiot": Idiot,
-        "Elder": Elder,
-        "Knight": Knight,
-        "Magician": Magician,
-        "Cupid": Cupid,
-        "Raven": Raven,
-        "GraveyardKeeper": GraveyardKeeper,
-        "Thief": Thief,
-        "Lover": Lover,
-    }
+
+def get_role_definition(name: str) -> RoleDefinition:
+    """Get definition by registry name."""
+    return get_definition(name)
 
 
 def get_werewolf_roles() -> set[str]:
-    """Get the set of role names that are werewolf roles.
-
-    Returns:
-        set[str]: Set of werewolf role names.
-    """
-    return {
-        "Werewolf",
-        "AlphaWolf",
-        "WhiteWolf",
-        "WolfBeauty",
-        "GuardianWolf",
-        "HiddenWolf",
-        "NightmareWolf",
-        "BloodMoonApostle",
-    }
+    """Role names that belong to the werewolf camp."""
+    return {d.name for d in ROLE_CATALOG if d.camp == Camp.WEREWOLF}
 
 
 def validate_role_names(role_names: list[str]) -> None:
-    """Validate that all role names are recognized and at least one werewolf exists.
-
-    Args:
-        role_names: List of role names to validate.
-
-    Raises:
-        ValueError: If a role name is not recognized or no werewolves are present.
-    """
+    """Validate role names and ensure at least one werewolf."""
     role_map = get_role_map()
     werewolf_roles = get_werewolf_roles()
 
@@ -99,19 +44,9 @@ def validate_role_names(role_names: list[str]) -> None:
 
 
 def create_roles(role_names: list[str]) -> list[type[Role]]:
-    """Create Role classes list from role names.
-
-    Args:
-        role_names: List of role names.
-
-    Returns:
-        list[type[Role]]: List of Role classes (not instances).
-
-    Raises:
-        ValueError: If a role name is not recognized.
-    """
+    """Create Role class list from registry names."""
     role_map = get_role_map()
-    roles = []
+    roles: list[type[Role]] = []
 
     for role_name in role_names:
         if role_name not in role_map:
