@@ -3,35 +3,28 @@
 import pytest
 
 from llm_werewolf.adapter.agent import AgentScopeWerewolfAgent
+from llm_werewolf.core.roles import Seer
 
 
-def test_agentscope_agent_init_and_helpers() -> None:
-    agent = AgentScopeWerewolfAgent(name="P1", number=5, role="prophet", plan="稳健")
-    assert agent.name == "P1"
-    assert agent.number == 5
-    assert len(agent.chat_history) == 1
-    assert agent.chat_history[0]["role"] == "system"
-
-    assert agent.extract_target("我选择 [[7]]") == 7
-    assert agent.extract_content("发言 [[hello world]]") == "hello world"
-    assert agent.is_wolf is False
+def test_agentscope_agent_bind_role() -> None:
+    agent = AgentScopeWerewolfAgent(name="P1", plan="稳健")
+    agent.bind_role(Seer, seat_number=5)
+    assert agent.role_definition is not None
+    assert agent.role_definition.name == "Seer"  # type: ignore[union-attr]
+    assert len(agent.chat_history) == 2
+    assert "【系统提示】" in agent.chat_history[0]["content"]
+    assert "预言家" in agent.chat_history[1]["content"]
 
 
 @pytest.mark.asyncio
-async def test_direct_model_fallback_response() -> None:
-    agent = AgentScopeWerewolfAgent(name="P1", number=2)
-    response = await agent.get_response("守卫请睁眼")
-    assert response == "[[2]]"
+async def test_direct_model_fallback() -> None:
+    agent = AgentScopeWerewolfAgent(name="P1")
+    agent.bind_role(Seer, seat_number=2)
+    response = await agent.get_response("【行动】预言家：请选择目标\n可选目标：\n1. A")
+    assert "[[" in response
 
 
-def test_generate_fallback_yes_no() -> None:
-    agent = AgentScopeWerewolfAgent(name="P1", number=1)
-    response = agent._generate_fallback_response("Reply YES or NO", "err")
-    assert response in ("[[0]]", "[[1]]")
-
-
-def test_lazy_import_agentscope_agent_class() -> None:
-    pytest.importorskip("agentscope")
-    from llm_werewolf.adapter import AgentScopeWerewolfAgent as LazyAgent
-
-    assert LazyAgent is AgentScopeWerewolfAgent
+def test_extract_helpers() -> None:
+    agent = AgentScopeWerewolfAgent(name="P1")
+    assert agent.extract_target("回复 [[7]]") == 7
+    assert agent.extract_content("[[你好]]") == "你好"

@@ -2,10 +2,17 @@ import re
 import random
 
 from llm_werewolf.core.types import AgentProtocol, PlayerProtocol
+from llm_werewolf.adapter.prompt_manager import PromptManager
+
+
+def _role_display_name(agent: AgentProtocol, role_name: str) -> str:
+    if hasattr(agent, "get_role_display_name"):
+        return agent.get_role_display_name()  # type: ignore[no-any-return]
+    return role_name
 
 
 class ActionSelector:
-    """Helper class to get structured action selections from AI agents."""
+    """Helper for structured Chinese prompts and [[n]] / [[0]]/[[1]] parsing."""
 
     @staticmethod
     def build_target_selection_prompt(
@@ -17,77 +24,15 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> str:
-        """Build a prompt for selecting a target player.
-
-        Args:
-            role_name: Name of the role performing the action.
-            action_description: Description of what action to perform.
-            possible_targets: List of possible target players.
-            allow_skip: Whether the player can skip this action.
-            additional_context: Additional context information.
-            round_number: Current round number.
-            phase: Current game phase.
-
-        Returns:
-            str: The formatted prompt.
-        """
-        prompt_parts = [f"You are a {role_name}."]
-
-        # Add round and phase information
-        if round_number is not None and phase:
-            prompt_parts.append(f"Current: Round {round_number} - {phase}")
-        elif round_number is not None:
-            prompt_parts.append(f"Current Round: {round_number}")
-
-        prompt_parts.extend([f"Action: {action_description}", ""])
-
-        if additional_context:
-            prompt_parts.append(additional_context)
-            prompt_parts.append("")
-
-        prompt_parts.append("Available targets:")
-        for idx, target in enumerate(possible_targets, 1):
-            prompt_parts.append(f"{idx}. {target.name} (Player ID: {target.player_id})")
-
-        if allow_skip:
-            prompt_parts.append(f"{len(possible_targets) + 1}. SKIP (do not perform this action)")
-
-        prompt_parts.extend([
-            "",
-            "Please select a target by responding with ONLY the number (1, 2, 3, etc.).",
-            "Do not include any other text in your response.",
-        ])
-
-        return "\n".join(prompt_parts)
-
-    @staticmethod
-    def parse_target_selection(
-        response: str, possible_targets: list[PlayerProtocol], allow_skip: bool = False
-    ) -> PlayerProtocol | None:
-        """Parse AI response to extract selected target.
-
-        Args:
-            response: The AI's response.
-            possible_targets: List of possible targets.
-            allow_skip: Whether skipping was allowed.
-
-        Returns:
-            PlayerProtocol | None: The selected player, or None if skipped/invalid.
-        """
-        numbers = re.findall(r"\d+", response.strip())
-        if not numbers:
-            return None
-
-        try:
-            selection = int(numbers[0])
-            if 1 <= selection <= len(possible_targets):
-                return possible_targets[selection - 1]
-            if allow_skip and selection == len(possible_targets) + 1:
-                return None
-        except (ValueError, IndexError):
-            pass
-
-        return None
+        return PromptManager.build_target_selection_prompt(
+            role_name,
+            action_description,
+            possible_targets,
+            allow_skip=allow_skip,
+            additional_context=additional_context,
+            round_number=round_number,
+            phase=phase,
+        )
 
     @staticmethod
     def build_yes_no_prompt(
@@ -97,52 +42,9 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> str:
-        """Build a yes/no question prompt.
-
-        Args:
-            role_name: Name of the role.
-            question: The question to ask.
-            context: Additional context.
-            round_number: Current round number.
-            phase: Current game phase.
-
-        Returns:
-            str: The formatted prompt.
-        """
-        prompt_parts = [f"You are a {role_name}."]
-
-        # Add round and phase information
-        if round_number is not None and phase:
-            prompt_parts.append(f"Current: Round {round_number} - {phase}")
-        elif round_number is not None:
-            prompt_parts.append(f"Current Round: {round_number}")
-
-        prompt_parts.append(f"Question: {question}")
-
-        if context:
-            prompt_parts.append("")
-            prompt_parts.append(context)
-
-        prompt_parts.extend([
-            "",
-            "Please respond with ONLY 'YES' or 'NO'.",
-            "Do not include any other text in your response.",
-        ])
-
-        return "\n".join(prompt_parts)
-
-    @staticmethod
-    def parse_yes_no(response: str) -> bool:
-        """Parse yes/no response.
-
-        Args:
-            response: The AI's response.
-
-        Returns:
-            bool: True for yes, False for no.
-        """
-        response_lower = response.strip().lower()
-        return "yes" in response_lower or "是" in response_lower
+        return PromptManager.build_yes_no_prompt(
+            role_name, question, context, round_number=round_number, phase=phase
+        )
 
     @staticmethod
     def build_multi_target_prompt(
@@ -154,72 +56,44 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> str:
-        """Build a prompt for selecting multiple targets.
+        return PromptManager.build_multi_target_prompt(
+            role_name,
+            action_description,
+            possible_targets,
+            num_targets,
+            additional_context=additional_context,
+            round_number=round_number,
+            phase=phase,
+        )
 
-        Args:
-            role_name: Name of the role.
-            action_description: Description of the action.
-            possible_targets: List of possible targets.
-            num_targets: Number of targets to select.
-            additional_context: Additional context.
-            round_number: Current round number.
-            phase: Current game phase.
+    parse_yes_no = staticmethod(PromptManager.parse_yes_no)
 
-        Returns:
-            str: The formatted prompt.
-        """
-        prompt_parts = [f"You are a {role_name}."]
-
-        # Add round and phase information
-        if round_number is not None and phase:
-            prompt_parts.append(f"Current: Round {round_number} - {phase}")
-        elif round_number is not None:
-            prompt_parts.append(f"Current Round: {round_number}")
-
-        prompt_parts.extend([
-            f"Action: {action_description}",
-            f"You need to select {num_targets} different targets.",
-            "",
-        ])
-
-        if additional_context:
-            prompt_parts.append(additional_context)
-            prompt_parts.append("")
-
-        prompt_parts.append("Available targets:")
-        for idx, target in enumerate(possible_targets, 1):
-            prompt_parts.append(f"{idx}. {target.name} (Player ID: {target.player_id})")
-
-        prompt_parts.extend([
-            "",
-            f"Please select {num_targets} targets by responding with the numbers separated by commas.",
-            "Example: 1, 3 (to select the 1st and 3rd targets)",
-            "Do not include any other text in your response.",
-        ])
-
-        return "\n".join(prompt_parts)
+    @staticmethod
+    def parse_target_selection(
+        response: str, possible_targets: list[PlayerProtocol], allow_skip: bool = False
+    ) -> PlayerProtocol | None:
+        """Parse [[n]] or plain number target selection."""
+        selection = PromptManager.parse_bracket_number(response)
+        if selection is None:
+            return None
+        if 1 <= selection <= len(possible_targets):
+            return possible_targets[selection - 1]
+        if allow_skip and selection == len(possible_targets) + 1:
+            return None
+        return None
 
     @staticmethod
     def parse_multi_target_selection(
         response: str, possible_targets: list[PlayerProtocol], num_targets: int
     ) -> list[PlayerProtocol] | None:
-        """Parse multi-target selection response.
-
-        Args:
-            response: The AI's response.
-            possible_targets: List of possible targets.
-            num_targets: Expected number of targets.
-
-        Returns:
-            list[PlayerProtocol] | None: Selected players, or None if invalid.
-        """
+        """Parse multiple targets from response."""
         numbers = re.findall(r"\d+", response.strip())
-        if len(numbers) != num_targets:
+        if len(numbers) < num_targets:
             return None
 
         try:
             selected = []
-            for num_str in numbers:
+            for num_str in numbers[:num_targets]:
                 selection = int(num_str)
                 if 1 <= selection <= len(possible_targets):
                     selected.append(possible_targets[selection - 1])
@@ -245,33 +119,19 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> PlayerProtocol | None:
-        """Get a target selection from an AI agent.
-
-        Args:
-            agent: The AI agent.
-            role_name: Name of the role.
-            action_description: Description of the action.
-            possible_targets: List of possible targets.
-            allow_skip: Whether skipping is allowed.
-            additional_context: Additional context.
-            fallback_random: If True, randomly select if AI fails.
-            round_number: Current round number.
-            phase: Current game phase.
-
-        Returns:
-            PlayerProtocol | None: Selected target, or None if skipped.
-        """
+        """Get a target selection from an AI agent."""
         if not possible_targets:
             return None
 
-        prompt = ActionSelector.build_target_selection_prompt(
-            role_name,
+        display = _role_display_name(agent, role_name)
+        prompt = PromptManager.build_target_selection_prompt(
+            display,
             action_description,
             possible_targets,
-            allow_skip,
-            additional_context,
-            round_number,
-            phase,
+            allow_skip=allow_skip,
+            additional_context=additional_context,
+            round_number=round_number,
+            phase=phase or "夜晚",
         )
 
         try:
@@ -299,29 +159,20 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> bool:
-        """Ask an agent a yes/no question.
+        """Ask an agent a yes/no question."""
+        display = _role_display_name(agent, role_name or "玩家")
 
-        Args:
-            agent: The AI agent.
-            context: Additional context for the question.
-            question: The yes/no question to ask.
-            role_name: Name of the role (optional, can be extracted from context).
-            round_number: Current round number.
-            phase: Current game phase.
-
-        Returns:
-            bool: True for yes, False for no.
-        """
-        if not role_name:
-            role_name = "Player"
-
-        prompt = ActionSelector.build_yes_no_prompt(
-            role_name, question, context, round_number, phase
+        prompt = PromptManager.build_yes_no_prompt(
+            display,
+            question,
+            context,
+            round_number=round_number,
+            phase=phase or "夜晚",
         )
 
         try:
             response = await agent.get_response(prompt)
-            return ActionSelector.parse_yes_no(response)
+            return PromptManager.parse_yes_no(response)
         except Exception:
             return False
 
@@ -337,24 +188,9 @@ class ActionSelector:
         round_number: int | None = None,
         phase: str | None = None,
     ) -> PlayerProtocol | None:
-        """Select a target from a list of possible targets.
-
-        Args:
-            agent: The AI agent.
-            context: Additional context for the selection.
-            possible_targets: List of possible targets.
-            action_description: Description of the action.
-            role_name: Name of the role (optional).
-            allow_skip: Whether skipping is allowed.
-            fallback_random: If True, randomly select if AI fails.
-            round_number: Current round number.
-            phase: Current game phase.
-
-        Returns:
-            PlayerProtocol | None: Selected target, or None if skipped.
-        """
+        """Select a target from a list of possible targets."""
         if not role_name:
-            role_name = "Player"
+            role_name = "玩家"
 
         return await ActionSelector.get_target_from_agent(
             agent,
@@ -370,16 +206,7 @@ class ActionSelector:
 
     @staticmethod
     async def get_free_response(agent: AgentProtocol, context: str, prompt: str) -> str:
-        """Get a free-form text response from an agent.
-
-        Args:
-            agent: The AI agent.
-            context: Context information.
-            prompt: The prompt/question to ask.
-
-        Returns:
-            str: The agent's response.
-        """
+        """Get a free-form text response from an agent."""
         full_prompt = f"{context}\n\n{prompt}"
         try:
             return await agent.get_response(full_prompt)

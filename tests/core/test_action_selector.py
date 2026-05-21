@@ -29,8 +29,8 @@ def test_build_target_selection_prompt(two_players: list[Player]) -> None:
     )
     assert "Seer" in prompt
     assert "Alice" in prompt
-    assert "SKIP" in prompt
-    assert "Round 1" in prompt
+    assert "跳过" in prompt
+    assert "第 1 轮" in prompt
 
 
 def test_parse_target_selection(two_players: list[Player]) -> None:
@@ -54,7 +54,7 @@ def test_build_multi_target_prompt(two_players: list[Player]) -> None:
         possible_targets=two_players,
         num_targets=2,
     )
-    assert "2 targets" in prompt or "2 different targets" in prompt
+    assert "2" in prompt and "不同目标" in prompt
 
 
 def test_parse_multi_target_selection(two_players: list[Player]) -> None:

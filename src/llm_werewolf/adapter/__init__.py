@@ -1,9 +1,10 @@
-"""Adapter layer for AgentScope integration."""
+"""Adapter layer for AgentScope integration and unified prompts."""
 
 from typing import TYPE_CHECKING
 
 from llm_werewolf.adapter.message import MessageAdapter, Msg
-from llm_werewolf.adapter.prompts import GamePrompts, PlanStrategies, RolePrompts
+from llm_werewolf.adapter.prompt_manager import PromptManager
+from llm_werewolf.adapter.prompts import GamePrompts, PlanStrategies, SYSTEM_PROMPT
 
 if TYPE_CHECKING:
     from llm_werewolf.adapter.agent import AgentScopeWerewolfAgent
@@ -14,7 +15,8 @@ __all__ = [
     "MessageAdapter",
     "Msg",
     "PlanStrategies",
-    "RolePrompts",
+    "PromptManager",
+    "SYSTEM_PROMPT",
 ]
 
 
