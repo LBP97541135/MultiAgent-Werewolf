@@ -1,4 +1,4 @@
-"""Chinese action descriptions for engine and role skill prompts."""
+"""Chinese action descriptions for engine and role action prompts."""
 
 
 class ActionDescriptions:

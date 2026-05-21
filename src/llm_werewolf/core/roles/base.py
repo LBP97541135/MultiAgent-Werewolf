@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from llm_werewolf.core.roles.catalog import get_definition_by_skill_class
+from llm_werewolf.core.roles.catalog import get_definition_by_role_class
 from llm_werewolf.core.types import (
     Camp,
     RoleConfig,
@@ -24,7 +24,7 @@ class Role(ABC):
         try:
             from llm_werewolf.core.prompts.manager import PromptManager
 
-            definition = get_definition_by_skill_class(type(self))
+            definition = get_definition_by_role_class(type(self))
             description = PromptManager.get_role_description(definition)
             self.config = self.config.model_copy(update={"description": description})
         except KeyError:
@@ -123,7 +123,7 @@ class Role(ABC):
         try:
             from llm_werewolf.core.prompts.manager import PromptManager
 
-            definition = get_definition_by_skill_class(type(self))
+            definition = get_definition_by_role_class(type(self))
             return (
                 f"{PromptManager.build_identity_prompt(definition)}\n"
                 f"玩家名：{player.name}\n技能说明：{self.description}"

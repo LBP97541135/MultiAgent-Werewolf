@@ -149,9 +149,9 @@ class AgentScopeWerewolfAgent(PromptAgentMixin, BaseAgent):
             self.chat_history = []
             self.bind_role(
                 __import__(
-                    self.role_definition.skill.split(":")[0],
-                    fromlist=[self.role_definition.skill.split(":")[1]],
-                ).__dict__[self.role_definition.skill.split(":")[1]],
+                    self.role_definition.implementation.split(":")[0],
+                    fromlist=[self.role_definition.implementation.split(":")[1]],
+                ).__dict__[self.role_definition.implementation.split(":")[1]],
                 self.seat_number,
                 self.plan,
             )

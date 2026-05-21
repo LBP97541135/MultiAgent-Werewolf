@@ -1,4 +1,4 @@
-"""Canonical role catalog: name, skill, camp, victory goal."""
+"""Canonical role catalog: name, implementation, camp, victory goal."""
 
 from llm_werewolf.core.types.enums import Camp, VictoryGoal
 from llm_werewolf.core.roles.definition import RoleDefinition
@@ -11,154 +11,154 @@ ROLE_CATALOG: list[RoleDefinition] = [
     R(
         name="Werewolf",
         display_name="狼人",
-        skill="llm_werewolf.core.roles.werewolf:Werewolf",
+        implementation="llm_werewolf.core.roles.werewolf:Werewolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="AlphaWolf",
         display_name="狼王",
-        skill="llm_werewolf.core.roles.werewolf:AlphaWolf",
+        implementation="llm_werewolf.core.roles.werewolf:AlphaWolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="WhiteWolf",
         display_name="白狼",
-        skill="llm_werewolf.core.roles.werewolf:WhiteWolf",
+        implementation="llm_werewolf.core.roles.werewolf:WhiteWolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="WolfBeauty",
         display_name="狼美人",
-        skill="llm_werewolf.core.roles.werewolf:WolfBeauty",
+        implementation="llm_werewolf.core.roles.werewolf:WolfBeauty",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="GuardianWolf",
         display_name="守卫狼",
-        skill="llm_werewolf.core.roles.werewolf:GuardianWolf",
+        implementation="llm_werewolf.core.roles.werewolf:GuardianWolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="HiddenWolf",
         display_name="隐狼",
-        skill="llm_werewolf.core.roles.werewolf:HiddenWolf",
+        implementation="llm_werewolf.core.roles.werewolf:HiddenWolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="BloodMoonApostle",
         display_name="血月使徒",
-        skill="llm_werewolf.core.roles.werewolf:BloodMoonApostle",
+        implementation="llm_werewolf.core.roles.werewolf:BloodMoonApostle",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="NightmareWolf",
         display_name="梦魇狼",
-        skill="llm_werewolf.core.roles.werewolf:NightmareWolf",
+        implementation="llm_werewolf.core.roles.werewolf:NightmareWolf",
         camp=C.WEREWOLF,
         victory_goal=V.WEREWOLF_PARITY,
     ),
     R(
         name="Villager",
         display_name="平民",
-        skill="llm_werewolf.core.roles.villager:Villager",
+        implementation="llm_werewolf.core.roles.villager:Villager",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Seer",
         display_name="预言家",
-        skill="llm_werewolf.core.roles.villager:Seer",
+        implementation="llm_werewolf.core.roles.villager:Seer",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Witch",
         display_name="女巫",
-        skill="llm_werewolf.core.roles.villager:Witch",
+        implementation="llm_werewolf.core.roles.villager:Witch",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Hunter",
         display_name="猎人",
-        skill="llm_werewolf.core.roles.villager:Hunter",
+        implementation="llm_werewolf.core.roles.villager:Hunter",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Guard",
         display_name="守卫",
-        skill="llm_werewolf.core.roles.villager:Guard",
+        implementation="llm_werewolf.core.roles.villager:Guard",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Idiot",
         display_name="白痴",
-        skill="llm_werewolf.core.roles.villager:Idiot",
+        implementation="llm_werewolf.core.roles.villager:Idiot",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Elder",
         display_name="长老",
-        skill="llm_werewolf.core.roles.villager:Elder",
+        implementation="llm_werewolf.core.roles.villager:Elder",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Knight",
         display_name="骑士",
-        skill="llm_werewolf.core.roles.villager:Knight",
+        implementation="llm_werewolf.core.roles.villager:Knight",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Magician",
         display_name="魔术师",
-        skill="llm_werewolf.core.roles.villager:Magician",
+        implementation="llm_werewolf.core.roles.villager:Magician",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Cupid",
         display_name="丘比特",
-        skill="llm_werewolf.core.roles.villager:Cupid",
+        implementation="llm_werewolf.core.roles.villager:Cupid",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Raven",
         display_name="乌鸦",
-        skill="llm_werewolf.core.roles.villager:Raven",
+        implementation="llm_werewolf.core.roles.villager:Raven",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="GraveyardKeeper",
         display_name="守墓人",
-        skill="llm_werewolf.core.roles.villager:GraveyardKeeper",
+        implementation="llm_werewolf.core.roles.villager:GraveyardKeeper",
         camp=C.VILLAGER,
         victory_goal=V.VILLAGER_ELIMINATE_WEREWOLVES,
     ),
     R(
         name="Thief",
         display_name="盗贼",
-        skill="llm_werewolf.core.roles.neutral:Thief",
+        implementation="llm_werewolf.core.roles.neutral:Thief",
         camp=C.NEUTRAL,
         victory_goal=V.NEUTRAL_THIEF,
     ),
     R(
         name="Lover",
         display_name="恋人",
-        skill="llm_werewolf.core.roles.neutral:Lover",
+        implementation="llm_werewolf.core.roles.neutral:Lover",
         camp=C.NEUTRAL,
         victory_goal=V.NEUTRAL_LOVER,
     ),
@@ -188,11 +188,11 @@ def get_definition(name: str) -> RoleDefinition:
     raise KeyError(msg)
 
 
-def get_definition_by_skill_class(role_class: type) -> RoleDefinition:
-    """Look up definition by skill class."""
-    skill = f"{role_class.__module__}:{role_class.__name__}"
+def get_definition_by_role_class(role_class: type) -> RoleDefinition:
+    """Look up definition by role class."""
+    impl_path = f"{role_class.__module__}:{role_class.__name__}"
     for definition in ROLE_CATALOG:
-        if definition.skill == skill:
+        if definition.implementation == impl_path:
             return definition
-    msg = f"No definition for skill class {skill}"
+    msg = f"No definition for role class {impl_path}"
     raise KeyError(msg)

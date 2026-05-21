@@ -3,7 +3,7 @@
 from llm_werewolf.core.roles.base import Role
 from llm_werewolf.core.roles.catalog import ROLE_CATALOG, get_definition
 from llm_werewolf.core.roles.definition import RoleDefinition
-from llm_werewolf.core.roles.loader import skill_class_from_definition
+from llm_werewolf.core.roles.loader import role_class_from_definition
 from llm_werewolf.core.types.enums import Camp
 
 
@@ -13,8 +13,8 @@ def get_role_definitions() -> list[RoleDefinition]:
 
 
 def get_role_map() -> dict[str, type[Role]]:
-    """Map registry name -> Role class (from definition skill paths)."""
-    return {d.name: skill_class_from_definition(d) for d in ROLE_CATALOG}
+    """Map registry name -> Role class (from definition implementation paths)."""
+    return {d.name: role_class_from_definition(d) for d in ROLE_CATALOG}
 
 
 def get_role_definition(name: str) -> RoleDefinition:

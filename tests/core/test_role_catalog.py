@@ -1,7 +1,7 @@
 """Tests for declarative role catalog."""
 
-from llm_werewolf.core.roles.catalog import get_catalog, get_definition, get_definition_by_skill_class
-from llm_werewolf.core.roles.loader import skill_class_from_definition
+from llm_werewolf.core.roles.catalog import get_catalog, get_definition, get_definition_by_role_class
+from llm_werewolf.core.roles.loader import role_class_from_definition
 from llm_werewolf.core.role_registry import get_role_map, get_werewolf_roles, create_roles
 from llm_werewolf.core.roles import Seer, Werewolf
 from llm_werewolf.core.types.enums import Camp, VictoryGoal
@@ -11,14 +11,14 @@ def test_catalog_has_four_fields() -> None:
     seer = get_definition("Seer")
     assert seer.name == "Seer"
     assert seer.display_name == "预言家"
-    assert "villager:Seer" in seer.skill
+    assert "villager:Seer" in seer.implementation
     assert seer.camp == Camp.VILLAGER
     assert seer.victory_goal == VictoryGoal.VILLAGER_ELIMINATE_WEREWOLVES
 
 
-def test_skill_class_resolution() -> None:
+def test_role_class_resolution() -> None:
     definition = get_definition("Werewolf")
-    assert skill_class_from_definition(definition) is Werewolf
+    assert role_class_from_definition(definition) is Werewolf
 
 
 def test_registry_matches_catalog() -> None:
@@ -37,6 +37,6 @@ def test_create_roles_from_names() -> None:
     assert roles[0] is Seer
 
 
-def test_definition_by_skill_class() -> None:
-    definition = get_definition_by_skill_class(Seer)
+def test_definition_by_role_class() -> None:
+    definition = get_definition_by_role_class(Seer)
     assert definition.display_name == "预言家"
