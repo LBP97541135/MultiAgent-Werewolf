@@ -9,9 +9,6 @@ from typing import Any, Optional
 
 from pydantic import Field
 
-# 使用AgentScope原生的Msg类
-from agentscope.message import Msg as AgentScopeMsg
-
 from llm_werewolf.core.agent import BaseAgent
 from llm_werewolf.adapter.message import MessageAdapter, Msg
 from llm_werewolf.adapter.prompts import RolePrompts, PlanStrategies
